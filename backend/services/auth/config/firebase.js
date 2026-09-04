@@ -1,6 +1,8 @@
-import {cert, initializeApp } from "firebase-admin";
-import serviceAccount from "../serviceAccountKey.json" with {type:"json"};
+import admin from "firebase-admin";
+import serviceAccount from "../serviceAccountKey.json" with { type: "json" };
 
-export const app = initializeApp({
-  credential: cert(serviceAccount)
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
 });
+
+export const app = admin;
