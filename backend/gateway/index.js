@@ -19,7 +19,7 @@ origin: process.env.FRONTEND_URL,
 }));
 app.use(cookieParser());
 app.use("/api/auth",proxy(process.env.AUTH_SERVICE));
-app.use("/api/chat",proxyWithHeaders(process.env.CHAT_SERVICE));
+app.use("/api/chat",protect,proxyWithHeaders(process.env.CHAT_SERVICE));
 app.get("/api/me",protect,getCurrentUser);
 app.get("/", (req, res) => {
     res.send("Gateway is running");
