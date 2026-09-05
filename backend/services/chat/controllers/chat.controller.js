@@ -31,7 +31,7 @@ export const getConversations = async(req,res) => {
     }
 }
 
-export const updateConversations = async(req,res) => {
+export const updateConversation = async(req,res) => {
     try{
         const {conversationId,title} = req.body;
         const updatedConversation = await Conversation.findByIdAndUpdate(conversationId, { title });
@@ -63,7 +63,7 @@ export const saveMessage = async(req,res) => {
 
 export const getMessages = async(req,res) => {
     try{
-        const {conversationId} = req.body;
+        const {conversationId} = req.params;
         const messages = await Message.find({ conversationId: conversationId }).sort({createdAt: 1});
         res.status(200).json(messages);
     }
