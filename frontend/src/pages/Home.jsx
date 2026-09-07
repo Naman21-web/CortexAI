@@ -5,6 +5,9 @@ import api from '../../utils/axios.js';
 import { setUserData } from '../redux/userSlice.js';
 import {FcGoogle} from "react-icons/fc"
 import { useDispatch, useSelector } from 'react-redux';
+import Sidebar from '../components/sidebar.jsx';
+import ChatArea from '../components/chatArea.jsx';
+import Artifact from '../components/artifact.jsx';
 
 
 function Home() {
@@ -12,13 +15,14 @@ function Home() {
     const {userData} = useSelector((state) => state.user);
     const dispatch = useDispatch();
 
-    console.log(userData);
+    console.log("UserData: ",userData);
 
     const handleLogin = async (token) => {
         try{
             const {data} = await api.post("/api/auth/login",{token});
-            dispatch(setUserData(data));
-            console.log(data);
+            console.log("Response from login api call: ",data);
+            dispatch(setUserData(data.user));
+            console.log("Inside handleLogin userData: ",userData);
         }
         catch(error){
             console.log(error);
@@ -28,11 +32,17 @@ function Home() {
     const googleLogin = async () => {
         const data = await signInWithPopup(auth, googleProvider);
         const token = await data.user.getIdToken();
-        console.log(token);
+        console.log("Got google login token: ",token);
         await handleLogin(token);
     }
   return (
-    <div className='h-screen flex bg-[#odof14] text-white  overflow-hidden'>
+    <div className='h-screen flex bg-[#0d0f14] text-white  overflow-hidden'>
+
+        <Sidebar />
+        <ChatArea />
+        <Artifact />
+
+
         {!userData && 
             <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur'>
                 <div className='w-[340px] bg-[#13151c] border border-white/[0.08] rounded-2xl p-7 flex flex-col gap-5'>
@@ -46,7 +56,7 @@ function Home() {
                     </button>
                 </div>  
             </div>
-    }
+        }
     </div>
   )
 }
