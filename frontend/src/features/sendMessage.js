@@ -1,0 +1,13 @@
+import api from "../../utils/axios";
+
+export const sendMessage = async (payload) => {
+    try{
+        const {data} = await api.post("api/agent/chat",payload);
+        console.log("Posted new msg to agent: ",data)
+        return data;
+    }
+    catch(error){
+        console.log(error);
+        return null;
+    }
+}
