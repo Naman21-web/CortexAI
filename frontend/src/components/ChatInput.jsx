@@ -3,12 +3,27 @@ import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { sendMessage } from '../features/sendMessage';
 import { addMessage } from '../redux/messageSlice';
+import { createConversation } from '../features/createConversation';
+import { addConversation, setConversationTitle, setSelectedConversation } from '../redux/conversationSlice';
+import { updateConversation } from '../features/updateConversation';
 
 const ChatInput = () => {
   const [value,setValue] = useState("");
   const {selectedConversation} = useSelector(state => state.conversation);
   const dispatch = useDispatch();
   const handleSendMessage = async () => {
+    let conversation = selectedConversation;
+    if(!conversation){
+      const conv = await createConversation();
+      dispatch(setSelectedConversation(conv));
+      dispatch(addConversation(conv))
+      conversation = conv;
+    }
+    if(conversation.title=="New Chat"){
+      await updateConversation({id:conversation?._id,title:value.trim()});
+      dispatch(setConversationTitle({conversationId:conversation?._id,title:value.slice(0,40)}));
+    }
+
     const payload = {
       prompt: value.trim(),
       conversationId: selectedConversation._id
