@@ -4,7 +4,7 @@ import { addMessage } from '../config/memory.js';
 
 export const agent = async (req,res) => {
     try{
-        const {prompt,conversationId} = req.body;
+        const {prompt,conversationId,agent} = req.body;
 
         
         await axios.post(`${process.env.CHAT_SERVICE}/message`,{
@@ -14,9 +14,11 @@ export const agent = async (req,res) => {
         });
         const result = await graph.invoke({
             prompt,
-            conversationId
+            conversationId,
+            agent
         });
         const response=result.aiResponse;
+        const images=result.images; 
         
         await addMessage(conversationId,"user",prompt);
         await addMessage(conversationId,"assistant",response);
@@ -24,9 +26,14 @@ export const agent = async (req,res) => {
         await axios.post(`${process.env.CHAT_SERVICE}/message`,{
             conversationId,
             role:"assistant",
-            content:response
+            content:response,
+            images
         });
-        return res.status(200).json(response);
+
+        console.log("Response: ",response)
+        console.log("Images",images)
+
+        return res.status(200).json({answer:response,images: images});
     }
     catch(error){
         console.error("Error while conversation:", error);
