@@ -22,7 +22,7 @@ export const getConversations = async(req,res) => {
     try{
         const userId = req.headers['x-user-id'];
         console.log("userId",userId);
-        const conversations = await Conversation.find({ userId: userId }).sort({updatedAt: -1});
+        const conversations = await Conversation.find({ userId: userId });
         res.status(200).json(conversations);
     }
     catch(error){
@@ -45,14 +45,21 @@ export const updateConversation = async(req,res) => {
 
 export const saveMessage = async(req,res) => {
     try{
-        const {conversationId, message,role} = req.body;
+        const {conversationId, content,role,images} = req.body;
+        console.log("conversationId: ",conversationId);
+        console.log("message: ",content);
+        console.log("role: ",role);
+
+
         // const role = req.headers['x-user-id'] ? "user" : "assistant";
         const newMessage = new Message({
             conversationId,
             role,
-            content: message
+            content,
+            images
         });
         await newMessage.save();
+        console.log("New Message: ",newMessage);
         res.status(201).json(newMessage);
     }
     catch(error){
@@ -64,7 +71,8 @@ export const saveMessage = async(req,res) => {
 export const getMessages = async(req,res) => {
     try{
         const {conversationId} = req.params;
-        const messages = await Message.find({ conversationId: conversationId }).sort({createdAt: 1});
+        const messages = await Message.find({ conversationId: conversationId });
+        console.log("Recent Messages: ",messages)
         res.status(200).json(messages);
     }
     catch(error){
