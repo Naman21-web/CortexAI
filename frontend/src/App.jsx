@@ -10,8 +10,9 @@ const App = () => {
   console.log("App Loaded");
   useEffect(() => {
     const fetchUser = async () => {
-      const user = await getCurrentUser();
-      dispatch(setUserData(user));
+      const data = await getCurrentUser();
+      dispatch(setUserData(data.user));
+      console.log("User inside App: ",data);
     };
     fetchUser();
   }, []);
