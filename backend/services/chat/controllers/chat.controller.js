@@ -22,7 +22,7 @@ export const getConversations = async(req,res) => {
     try{
         const userId = req.headers['x-user-id'];
         console.log("userId",userId);
-        const conversations = await Conversation.find({ userId: userId });
+        const conversations = await Conversation.find({ userId: userId }).sort({updatedAt: -1});
         res.status(200).json(conversations);
     }
     catch(error){
