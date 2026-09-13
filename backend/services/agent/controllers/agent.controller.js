@@ -17,8 +17,9 @@ export const agent = async (req,res) => {
             conversationId,
             agent
         });
-        const response=result.aiResponse;
-        const images=result.images; 
+        const response=result?.aiResponse;
+        const images=result?.images; 
+        const artifacts=result?.artifacts;
         
         await addMessage(conversationId,"user",prompt);
         await addMessage(conversationId,"assistant",response);
@@ -27,13 +28,14 @@ export const agent = async (req,res) => {
             conversationId,
             role:"assistant",
             content:response,
-            images
+            images,
+            artifacts
         });
 
         console.log("Response: ",response)
         console.log("Images",images)
 
-        return res.status(200).json({answer:response,images: images});
+        return res.status(200).json({answer:response,images: images,artifacts: artifacts});
     }
     catch(error){
         console.error("Error while conversation:", error);
