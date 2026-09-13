@@ -2,6 +2,7 @@ import api from "../../utils/axios";
 
 export const sendMessage = async (payload) => {
     try{
+        console.log("Posting new msg: ",payload);
         const {data} = await api.post("api/agent/chat",payload);
         console.log("Posted new msg to agent: ",data)
         return data;

@@ -19,7 +19,6 @@ const Sidebar = () => {
             const data = await getConversations();
             dispatch(setConversations(data));
         };
-        console.log("All Conversations: ",conversations);
         getConversation();
     },[userData?._id])
     
@@ -31,7 +30,7 @@ const Sidebar = () => {
     //     dispatch(addConversation(data));
     // }
 
-    console.log("User Data from Sidebar: ",userData);
+    console.log("Sidebar Reloaded,Conversation: ",conversations);
 
     if(collapsed){
         return (
