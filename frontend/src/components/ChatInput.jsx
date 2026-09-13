@@ -2,7 +2,7 @@ import { Code2, FileText, Globe, ImageIcon, MessageSquare, Mic, Paperclip, Prese
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { sendMessage } from '../features/sendMessage';
-import { addMessage } from '../redux/messageSlice';
+import { addMessage, setArtifacts } from '../redux/messageSlice';
 import { createConversation } from '../features/createConversation';
 import { addConversation, setConversationTitle, setSelectedConversation } from '../redux/conversationSlice';
 import { updateConversation } from '../features/updateConversation';
@@ -20,8 +20,9 @@ const ChatInput = () => {
       dispatch(addConversation(conv))
       conversation = conv;
     }
-    if(conversation.title=="New Chat"){
-      await updateConversation({id:conversation?._id,title:value.trim()});
+    if(conversation.title=="New Conversation"){
+      console.log("Calling Update conv: ",value);
+      await updateConversation({title:value.slice(0,40)},conversation?._id);
       dispatch(setConversationTitle({conversationId:conversation?._id,title:value.slice(0,40)}));
     }
 
@@ -33,6 +34,7 @@ const ChatInput = () => {
     setValue("");
     dispatch(addMessage({role:"user",content:value}));
     const data = await sendMessage(payload);
+    dispatch(setArtifacts(data?.artifacts ?? []));
     dispatch(addMessage({role:"assistant",content:data?.answer,images:data?.images}))
     console.log("Result from sendMessage api call: ",data);
   }

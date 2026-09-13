@@ -11,7 +11,7 @@ const MessageBubble = ({role,content,images}) => {
   const [copiedCode,setCopiedCode] = useState("");
 
   const copyCode = async (code) => {
-    navigator.clipboard.writeText(code);
+    await navigator.clipboard.writeText(code);
     setCopiedCode(code);
     setTimeout(() => {
       setCopiedCode("");

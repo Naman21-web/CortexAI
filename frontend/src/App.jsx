@@ -12,7 +12,6 @@ const App = () => {
     const fetchUser = async () => {
       const data = await getCurrentUser();
       dispatch(setUserData(data.user));
-      console.log("User inside App: ",data);
     };
     fetchUser();
   }, []);

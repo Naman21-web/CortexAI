@@ -20,9 +20,7 @@ function Home() {
     const handleLogin = async (token) => {
         try{
             const {data} = await api.post("/api/auth/login",{token});
-            console.log("Response from login api call: ",data);
             dispatch(setUserData(data.user));
-            console.log("Inside handleLogin userData: ",userData);
         }
         catch(error){
             console.log(error);
@@ -32,7 +30,6 @@ function Home() {
     const googleLogin = async () => {
         const data = await signInWithPopup(auth, googleProvider);
         const token = await data.user.getIdToken();
-        console.log("Got google login token: ",token);
         await handleLogin(token);
     }
   return (

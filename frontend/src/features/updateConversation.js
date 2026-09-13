@@ -1,9 +1,9 @@
 import api from "../../utils/axios";
 
-export const updateConversation = async (payload) => {
+export const updateConversation = async (payload,conversationId) => {
     try{
         console.log("Updating new Conversation...");
-        const {data} = await api.put("/api/chat/conversation",payload);
+        const {data} = await api.put(`/api/chat/conversation/${conversationId}`,payload);
         console.log("Conversation updated: ",data)
         return data;
     }
