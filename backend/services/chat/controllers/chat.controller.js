@@ -33,7 +33,8 @@ export const getConversations = async(req,res) => {
 
 export const updateConversation = async(req,res) => {
     try{
-        const {conversationId,title} = req.body;
+        const {conversationId} = req.params;
+        const { title } = req.body;
         const updatedConversation = await Conversation.findByIdAndUpdate(conversationId, { title });
         res.status(200).json(updatedConversation);
     }
@@ -45,7 +46,7 @@ export const updateConversation = async(req,res) => {
 
 export const saveMessage = async(req,res) => {
     try{
-        const {conversationId, content,role,images} = req.body;
+        const {conversationId, content,role,images,artifacts} = req.body;
         console.log("conversationId: ",conversationId);
         console.log("message: ",content);
         console.log("role: ",role);
@@ -56,7 +57,8 @@ export const saveMessage = async(req,res) => {
             conversationId,
             role,
             content,
-            images
+            images,
+            artifacts
         });
         await newMessage.save();
         console.log("New Message: ",newMessage);
