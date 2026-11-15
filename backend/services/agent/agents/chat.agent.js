@@ -3,20 +3,21 @@ import { getModel } from "../config/llmModels.js";
 import { getMemory } from "../config/memory.js";
 
 export const chatAgent = async (state) => {
-    const llm = await getModel("chat");
+    try {
+        const llm = await getModel("chat");
 
-    const history = await getMemory(state.conversationId);
+        const history = await getMemory(state.conversationId);
 
-    const searchContext = state.searchResults
-        ? `
+        const searchContext = state.searchResults
+            ? `
         Web Search Results:
         ${JSON.stringify(state.searchResults)}
 
         Answer the user using only the above search results.
         `
-        : "";
+            : "";
 
-    const systemPrompt = `
+        const systemPrompt = `
     You are CortexAI, an intelligent AI assistant.
 
     ${searchContext}
@@ -38,49 +39,56 @@ export const chatAgent = async (state) => {
     - Never generate large walls of text.
     `;
 
-    const messages = [
-        new SystemMessage({
-            content: systemPrompt
-        })
-    ];
+        const messages = [
+            new SystemMessage({
+                content: systemPrompt
+            })
+        ];
 
-    history.forEach((msg, index) => {
-        console.log(`History[${index}]:`, msg);
+        history.forEach((msg, index) => {
+            console.log(`History[${index}]:`, msg);
 
-        if (!msg || !msg.content) {
-            console.warn(`Skipping invalid history[${index}]`);
-            return;
+            if (!msg || !msg.content) {
+                console.warn(`Skipping invalid history[${index}]`);
+                return;
+            }
+
+            if (msg.role === "user") {
+                messages.push(
+                    new HumanMessage({
+                        content: msg.content
+                    })
+                );
+            } else if (msg.role === "assistant") {
+                messages.push(
+                    new AIMessage({
+                        content: msg.content
+                    })
+                );
+            }
+        });
+
+        messages.push(
+            new HumanMessage({
+                content: state.prompt
+            })
+        );
+
+        console.log("Messages Array:", messages);
+
+        const response = await llm.invoke(messages);
+
+        console.log("Chat Agent Res:", response);
+
+        return {
+            ...state,
+            aiResponse: response.content
+        };
+    }
+    catch(err){
+        return {
+            ...state,
+            aiResponse: "Failed to generate response"
         }
-
-        if (msg.role === "user") {
-            messages.push(
-                new HumanMessage({
-                    content: msg.content
-                })
-            );
-        } else if (msg.role === "assistant") {
-            messages.push(
-                new AIMessage({
-                    content: msg.content
-                })
-            );
-        }
-    });
-
-    messages.push(
-        new HumanMessage({
-            content: state.prompt
-        })
-    );
-
-    console.log("Messages Array:", messages);
-
-    const response = await llm.invoke(messages);
-
-    console.log("Chat Agent Res:", response);
-
-    return {
-        ...state,
-        aiResponse: response.content
-    };
+    }
 };
