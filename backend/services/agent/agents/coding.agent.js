@@ -1,9 +1,10 @@
 import { getModel } from "../config/llmModels.js"
 
 export const codingAgent = async (state) => {
-    const intentLlm = await getModel("intent");
-    const codingLlm = await getModel("coding");
-    const intentRes = await intentLlm.invoke(`
+    try {
+        const intentLlm = await getModel("intent");
+        const codingLlm = await getModel("coding");
+        const intentRes = await intentLlm.invoke(`
         You are an intent classifier.
         Return ONLY one of these values.
         CODE_GENERATION
@@ -17,9 +18,9 @@ export const codingAgent = async (state) => {
         User Request:
         ${state.prompt}
     `);
-    const intent = intentRes.content;
-    if(intent=="CODE_GENERATION"){
-        const prompt = `
+        const intent = intentRes.content;
+        if (intent == "CODE_GENERATION") {
+            const prompt = `
             You are CortexAi Coding Agent.
             Generate the requested project.
             
@@ -77,23 +78,23 @@ export const codingAgent = async (state) => {
             User Request:
             ${state.prompt}
         `
-        const res = await codingLlm.invoke(prompt);
-        const data = await JSON.parse(res?.content);
-        console.log("Coding Agent Res: ",data);
-        return {
-            ...state,
-            aiResponse: "Code Generated Successfully",
-            artifacts: [
-              {
-                id: Date.now(),
-                type: "Project",
-                files: data.files ?? [],
-                title: state.prompt
-              }  
-            ]
+            const res = await codingLlm.invoke(prompt);
+            const data = await JSON.parse(res?.content);
+            console.log("Coding Agent Res: ", data);
+            return {
+                ...state,
+                aiResponse: "Code Generated Successfully",
+                artifacts: [
+                    {
+                        id: Date.now(),
+                        type: "Project",
+                        files: data.files ?? [],
+                        title: state.prompt
+                    }
+                ]
+            }
         }
-    }
-    const res = await codingLlm.invoke(`
+        const res = await codingLlm.invoke(`
         The user's request is:
         ${intent}
         Return Markdown only.
@@ -107,10 +108,18 @@ export const codingAgent = async (state) => {
         User Request:
         ${state.prompt}
     `);
-    const data = res.content;
-    return {
-        ...state,
-        aiResponse: data,
-        artifacts: []
+        const data = res.content;
+        return {
+            ...state,
+            aiResponse: data,
+            artifacts: []
+        }
+    }
+    catch (err) {
+        return {
+            ...state,
+            aiResponse: "Failed to generate code",
+            artifacts: []
+        }
     }
 }
