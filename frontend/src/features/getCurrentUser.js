@@ -6,7 +6,9 @@ const getCurrentUser = async () => {
         return data;
     }
     catch (error) {
-        console.log(error);
+        if (error.response?.status !== 401) {
+            console.error("Failed to fetch current user:", error);
+        }
         return null;
     }   
 }

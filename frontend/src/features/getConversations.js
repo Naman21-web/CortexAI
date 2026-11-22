@@ -1,14 +1,16 @@
 import api from "../../utils/axios";
 
-export const getConversations = async () => {
+export const getConversations = async (userId) => {
+    if (!userId) {
+        return [];
+    }
+
     try{
-        console.log("Fetching all conv")
         const {data} = await api.get("/api/chat/conversations");
-        console.log("Fetched all Conversations: ",data)
         return data;
     }
     catch(error){
-        console.log(error);
+        console.error("Failed to fetch conversations:", error);
         return [];
     }
 }
